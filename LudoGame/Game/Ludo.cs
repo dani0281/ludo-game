@@ -1,4 +1,16 @@
-﻿using System;
+﻿//
+// errors/needs
+//
+// 1 - line 430 - doesn't remove the piece from the player
+// 2 - line 463 - doesn't change cordinates for own piece
+//
+// TODO
+//
+// * - placement system
+// * - stop of game
+//
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,21 +57,58 @@ namespace LudoGame.Game
                 this.Play();
             }
 
-            // TEST
-            // For at teste manuelt, husk at udkommentér while-løkken
-            /*this.MoveOutOfHome("G1");
-            this.MoveF("G1", 4);
+            // this.Test1();
+            // this.Test2();
+            // this.Test1(true);
+            // this.Test2(true);
 
-            this.MoveOutOfHome("G2");
-            this.MoveF("G2", 6);
+            //this.Test();
 
-            this.MoveOutOfHome("Y1");
-            this.MoveOutOfHome("Y2");
-
-            this.MoveF("G2", 9);*/
 
             this.RefreshFrame();
             Console.ReadLine();
+        }
+
+        public void Test()
+        {
+            this.MoveOutOfHome("G1");
+            this.MoveF("G1", 52);
+            this.MoveF("G1", 4);
+
+            this.RefreshFrame();
+        }
+
+        public void Test1(bool withFrame = false)
+        {
+            Console.WriteLine("Should kick Y1 home");
+
+            this.MoveOutOfHome("Y1");
+            this.MoveF("Y1", 1);
+
+            this.MoveOutOfHome("G1");
+            this.MoveF("G1", 14);
+
+            if (withFrame)
+                this.RefreshFrame();
+        }
+
+        public void Test2(bool withFrame = false)
+        {
+            Console.WriteLine("Should kick G1 home");
+
+            this.MoveOutOfHome("Y1");
+            this.MoveF("Y1", 1);
+
+            this.MoveOutOfHome("Y2");
+            this.MoveF("Y2", 1);
+
+            this.MoveOutOfHome("G1");
+            this.MoveF("G1", 14);
+
+            if (withFrame)
+                this.RefreshFrame();
+
+            Console.WriteLine("Row: {0}, Column: {1}", this.GetPieceFromID("G1").GetRow(), this.GetPieceFromID("G1").GetColumn());
         }
 
         private void Play(Player playerToPlay = null, int turns = 1)
@@ -390,6 +439,7 @@ namespace LudoGame.Game
                     nextPos -= 2;
                 } else if(currentField.IsFinish && moves == 0)
                 {
+                    // 1- DOESN'T REMOVE THE PIECE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     player.pieces.Remove(piece);
                 }
 
@@ -408,9 +458,11 @@ namespace LudoGame.Game
 
                 if(piecesOnField.Count() >= 1)
                 {
-                    piecesOnField.ForEach(p =>
+                    Piece first = piecesOnField.Count() >= 1 ? piecesOnField.First() : null;
+
+                    if(first != null)
                     {
-                        if(p.GetPlayerColor() == piece.GetPlayerColor())
+                        if(first.GetPlayerColor() == piece.GetPlayerColor())
                         {
                             hasFinishedMoving = true;
                             moves = 0;
@@ -418,17 +470,19 @@ namespace LudoGame.Game
                         {
                             if((movesLeft - 1) == 0)
                             {
-                                if (piecesOnField.Count() > 1)
+                                if(piecesOnField.Count() > 1)
                                 {
+                                    // 2 - DOESN'T CHANGE CORDINATES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                    Console.WriteLine("Kicking {0} home", piece.GetPieceID());
                                     this.MoveToHome(piece.GetPieceID());
-                                }
-                                else
+                                } else
                                 {
-                                    this.MoveToHome(piecesOnField.First().GetPieceID());
+                                    Console.WriteLine("Kicking {0} home", first.GetPieceID());
+                                    this.MoveToHome(first.GetPieceID());
                                 }
                             }
                         }
-                    });
+                    }
                 }
 
                 // Register move
