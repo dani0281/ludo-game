@@ -85,9 +85,12 @@ namespace LudoGame.Game
 
                 Console.WriteLine("-- Moving {0} outside of home", piecesAtHome.First().GetPieceID());
                 this.MoveOutOfHome(piecesAtHome.First().GetPieceID());
+
+                Console.ReadLine();
             } else if(piecesInPlay.Count() == 0 && rolled != 6)
             {
                 Console.WriteLine("Needs a six, to get a piece out of home..");
+                Console.ReadLine();
             } else if(piecesAtHome.Count() == 0)
             {
                 // can only move around
@@ -124,7 +127,6 @@ namespace LudoGame.Game
                 }
             } else if(piecesAtHome.Count() > 0 && piecesInPlay.Count() > 0)
             {
-                // can take one out, or move around
                 Console.WriteLine("Choose a piece to move:");
                 Console.WriteLine("-----------------------");
 
@@ -162,17 +164,13 @@ namespace LudoGame.Game
                         this.MoveF(input, rolled);
                     }
                 }
-            }
-
-            // extra turn if you hit 6
-            if (turns > 1) {
-                Console.ReadLine();
-                this.Play(playerToPlay, (turns - 1));
             } else
             {
                 Console.ReadLine();
-                this.NextTurn();
             }
+
+            if (turns > 1) this.Play(playerToPlay, (turns - 1));
+            else this.NextTurn();
         }
 
         private void PrintPiecesAvailable(List<Piece> pieces)
@@ -414,17 +412,12 @@ namespace LudoGame.Game
                 }
 
                 // Register move
-                this.Move(piece, nextField);
+                piece.SetPosition(nextField.GetFieldID(), nextField);
                 movesLeft--;
                 i++;
 
                 if (i == moves) hasFinishedMoving = true;
             }
-        }
-
-        private void Move(Piece piece, Field field)
-        {
-            piece.SetPosition(field.GetFieldID(), field);
         }
 
         private Field GetFieldFromPosition(int position)
