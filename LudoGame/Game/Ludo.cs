@@ -74,24 +74,42 @@ namespace LudoGame.Game
 
             int rolled = this.Roll(Dice.Roll());
 
-            //if (piecesInPlay.Count() == 0) turns += 3;
             if (rolled == 6) turns++;
-
             Console.WriteLine("{0} rolled {1}", playerToPlay.GetColor(), rolled);
 
-            if(piecesInPlay.Count() == 0 && rolled == 6)
+            if(piecesInPlay.Count() == 0)
             {
-                turns = 1;
+                bool hasRolledSix = (rolled == 6);
+                int tries = 1;
 
-                Console.WriteLine("-- Moving {0} outside of home", piecesAtHome.First().GetPieceID());
-                this.MoveOutOfHome(piecesAtHome.First().GetPieceID());
+                while(!hasRolledSix)
+                {
+                    rolled = this.Roll(Dice.Roll());
 
-                Console.ReadLine();
-            } else if(piecesInPlay.Count() == 0 && rolled != 6)
-            {
-                Console.WriteLine("Needs a six, to get a piece out of home..");
-                Console.ReadLine();
-            } else if(piecesAtHome.Count() == 0)
+                    Console.WriteLine("{0} rolled {1}", playerToPlay.GetColor(), rolled);
+
+                    if (rolled == 6)
+                    {
+                        hasRolledSix = true;
+                        turns++;
+                    }
+
+                    if(tries-- == 0)
+                    {
+                        break;
+                    }
+                }
+
+                if(hasRolledSix)
+                {
+                    Console.WriteLine("-- Moving {0} outside of home", piecesAtHome.First().GetPieceID());
+                    this.MoveOutOfHome(piecesAtHome.First().GetPieceID());
+                    Console.ReadLine();
+                } else
+                {
+                    Console.ReadLine();
+                }
+            } else if (piecesAtHome.Count() == 0)
             {
                 // can only move around
                 Console.WriteLine("Choose a piece to move:");
@@ -125,12 +143,13 @@ namespace LudoGame.Game
                         this.MoveF(input, rolled);
                     }
                 }
-            } else if(piecesAtHome.Count() > 0 && piecesInPlay.Count() > 0)
+            }
+            else if (piecesAtHome.Count() > 0 && piecesInPlay.Count() > 0)
             {
                 Console.WriteLine("Choose a piece to move:");
                 Console.WriteLine("-----------------------");
 
-                if(rolled == 6)
+                if (rolled == 6)
                 {
                     Console.WriteLine("Piece(s) from home");
                     this.PrintPiecesAvailable(piecesAtHome);
@@ -142,7 +161,7 @@ namespace LudoGame.Game
                 string input = string.Empty;
                 bool valid = false;
 
-                while(!valid)
+                while (!valid)
                 {
                     Console.Write("> ");
                     input = Console.ReadLine();
@@ -164,7 +183,8 @@ namespace LudoGame.Game
                         this.MoveF(input, rolled);
                     }
                 }
-            } else
+            }
+            else
             {
                 Console.ReadLine();
             }
